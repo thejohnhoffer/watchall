@@ -30,7 +30,7 @@ class Watchall(object):
         self.first_showing_line = 0
         self.cursor_position = [0, 0]
 
-        self.cmd = args.Command
+        self.cmd = args.command
 
     def run(self):
         self.thread.start()
@@ -67,7 +67,7 @@ class Watchall(object):
                 time.sleep(0.25)
 
     def execute_cmd(self):
-        process = subprocess.Popen(self.cmd , shell=True, stdout=subprocess.PIPE,
+        process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT,
                                    universal_newlines=True)
 
@@ -102,7 +102,8 @@ class Watchall(object):
                 self.cursor_position = self.pad.getyx()
             try:
                 stdscr.clear()
-                stdscr.addstr(0, 0, "Every {}s: {}, first line: {}/{}".format(self.interval, self.cmd,
+                str_cmd = ' '.join(self.cmd)
+                stdscr.addstr(0, 0, "Every {}s: {}, first line: {}/{}".format(self.interval, str_cmd,
                                                                               self.first_showing_line, self.cursor_position[0]))
                 stdscr.refresh()
                 self.pad.refresh(self.first_showing_line, 0, 1, 0, y-1, x)
@@ -118,9 +119,9 @@ class Watchall(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-n', '--interval', type=int, help='interval', default=2)
-    parser.add_argument('-d', '--differences', action='store_true', help='highlight differences')
-    parser.add_argument('Command', metavar='Command', nargs=argparse.REMAINDER, help='Command')
+    parser.add_argument('-n', '--interval', type=int, help='Time between refresh', default=2)
+    parser.add_argument('-d', '--differences', action='store_true', help='Highlight changes')
+    parser.add_argument('command', nargs=argparse.REMAINDER, help='Command')
 
     # --------------------------------- Global variables ------------------------
     args = parser.parse_args()
