@@ -24,16 +24,13 @@ class Watchall(object):
         self.active = True
         self.interval = args.interval
         self.differences = args.differences
-        self.max_line_scroll = args.max_line_scroll
         self.pre_output_lines = []
         self.cur_output_lines = []
         self.mutex = Lock()
         self.first_showing_line = 0
         self.cursor_position = [0, 0]
 
-        self.cmd = args.Command[0]
-        for item in args.Args:
-            self.cmd += ' ' + item
+        self.cmd = args.Command
 
     def run(self):
         self.thread.start()
@@ -123,9 +120,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-n', '--interval', type=int, help='interval', default=2)
     parser.add_argument('-d', '--differences', action='store_true', help='highlight differences')
-    parser.add_argument('-m', '--max_line_scroll', type=int, help='max_line_scroll', default=200)
-    parser.add_argument('Command', metavar='Command', nargs=1, help='Command')
-    parser.add_argument('Args', metavar='Arguments', nargs=argparse.REMAINDER, help='Command arguments')
+    parser.add_argument('Command', metavar='Command', nargs=argparse.REMAINDER, help='Command')
 
     # --------------------------------- Global variables ------------------------
     args = parser.parse_args()
