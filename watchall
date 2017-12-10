@@ -80,23 +80,30 @@ class Watchall(object):
 
         return output.splitlines()
 
+    # Check differenecs
+    def is_dif(self, cur_ij, pre_i, j):
+        if self.differences and j < len(pre_i):
+            return pre_i[j] != cur_ij 
+        return False
+
     def refresh_screen(self, update_pad = False):
         try:
             self.mutex.acquire()
             y, x = self.stdscr.getmaxyx()
 
             if update_pad is True:
-                max_scroll = len(self.cur_output_lines)
-                self.pad = curses.newpad(10+max_scroll, x)
+                cur_lines = self.cur_output_lines
+                max_pad = 10 + len(cur_lines)
+                self.pad = curses.newpad(max_pad, x)
+                pre_iter = iter(self.pre_output_lines)
 
-                for i in range(0, max_scroll):
-                    line = self.cur_output_lines[i]
-                    for j in range(0, len(line)):
-                        if self.differences and len(self.pre_output_lines) > i and len(self.pre_output_lines[i]) > j \
-                                and self.pre_output_lines[i][j] != self.cur_output_lines[i][j]:
-                            self.pad.addch(self.cur_output_lines[i][j], curses.A_REVERSE)
+                for i, cur_i in enumerate(cur_lines):
+                    pre_i = next(pre_iter, [])
+                    for j, cur_ij in enumerate(cur_i):
+                        if self.is_dif(cur_ij, pre_i, j):
+                            self.pad.addch(cur_ij, curses.A_REVERSE)
                         else:
-                            self.pad.addch(self.cur_output_lines[i][j])
+                            self.pad.addch(cur_ij)
                     self.pad.addch('\n')
 
                 self.cursor_position = self.pad.getyx()
